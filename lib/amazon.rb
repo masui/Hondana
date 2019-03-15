@@ -25,8 +25,12 @@ class MyAmazon
         options[:associate_tag]     = ASSOC_ID
         options[:country]           = 'jp'
       end
-      
+
+      sleep 2
       res = Amazon::Ecs.item_lookup isbns
+      p res
+      exit
+      
       res.items.each do |item|
         isbn =item.get('ASIN')
         element = item.get_element('ItemAttributes');
@@ -114,6 +118,9 @@ if __FILE__ == $0 then
   isbn = '4063192393'
   isbn = '4065020352'
   puts amazon.title(isbn)
+
+
+  exit
   puts amazon.publisher(isbn)
   puts amazon.authors(isbn)
   puts amazon.url(isbn)
