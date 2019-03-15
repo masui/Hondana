@@ -26,11 +26,6 @@ class MyAmazon
         options[:country]           = 'jp'
       end
 
-      sleep 2
-      res = Amazon::Ecs.item_lookup isbns
-      p res
-      exit
-      
       res.items.each do |item|
         isbn =item.get('ASIN')
         element = item.get_element('ItemAttributes');
