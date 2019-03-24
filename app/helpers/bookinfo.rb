@@ -45,7 +45,7 @@ class Bookinfo
         when line =~ /<title>/
           line =~ /<title>([^\|]+)\s+\|\s*([^\|]+)\s*.*<\/title>/
           data['title'] = $1
-          data['authors'] = $2.split(/,\s*/)
+          data['authors'] = $2.split(/\s*,\s*/)
         #when line =~ /field-author/
         #  line =~ />(.*)<\/a>/
         #  data['authors'] << $1
