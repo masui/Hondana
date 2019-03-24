@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # -*- ruby -*-
 #
-# Amazonの書籍データを取得
+# 書籍データを取得 (Amazon以外の方法で)
 #
 
 require 'net/http'
@@ -10,50 +10,67 @@ require 'open_bd'
 require 'json'
 
 class Bookinfo
+  def emptydata
+    data = {}
+    data['authors'] = []
+    data['title'] = ''
+    data['publisher'] = ''
+    data['isbn'] = @isbn
+    data
+  end
+  
   def initialize(isbn)
     @isbn = isbn
-    @data = {}
-    @data['authors'] = []
-    @data['title'] = ''
-    @data['publisher'] = ''
-    @data['isbn'] = isbn
+    @data = emptydata
 
-    amazon
-    openbd unless @data['title']
-    google unless @data['title']
+    @data = amazon
+    data = openbd
+    @data['title'] = data['title'] if @data['title'] == ''
+    @data['publisher'] = data['publisher'] if @data['publisher'] == ''
+    @data['authors'] = data['authors'] if @data['authors'].length == 0
+    data = google
+    @data['title'] = data['title'] if @data['title'] == ''
+    @data['publisher'] = data['publisher'] if @data['publisher'] == ''
+    @data['authors'] = data['authors'] if @data['authors'] == []
   end
   
   def amazon
+    data = emptydata
     begin
       url = "https://www.amazon.co.jp/dp/#{@isbn}"
       page = open(url)
-      page.read.split(/\n/).each { |line|
+      html = page.read
+      html.split(/\n/).each { |line|
         case
         when line =~ /<title>/
-          line =~ /<title>([^\|]+)\s+\|.*<\/title>/
-          @data['title'] = $1
-        when line =~ /field-author/
-          line =~ />(.*)<\/a>/
-          @data['authors'] << $1
+          line =~ /<title>([^\|]+)\s+\|\s*([^\|]+)\s*.*<\/title>/
+          data['title'] = $1
+          data['authors'] = $2.split(/,\s*/)
+        #when line =~ /field-author/
+        #  line =~ />(.*)<\/a>/
+        #  data['authors'] << $1
         when line =~ /isbn-10/i
           line =~ /\/b>\s*(.*)<\/li>/
-          @data['isbn'] = $1
-        when line =~ /出版社/
-          line =~ /\/b>\s*([^\(]+)\s*;.*\s*(\(.*\))?<\/li>/
-          @data['publisher'] = $1
+          data['isbn'] = $1
+        #when line =~ /出版社/
+        when line =~ /出版社.*\/b>\s*([^\(]+)(\s*;.*)\s*(\(.*\))?<\/li>/
+          data['publisher'] = $1
+        when line =~ /出版社.*\/b>\s*([^\(]+)\s*(\(.*\))?<\/li>/
+          # <li><b>出版社:</b> SBクリエイティブ (2019/3/16)</li>
+          # <li><b>出版社:</b> 講談社 (2008/5/13)</li>
+          data['publisher'] = $1
         end
       }
     rescue
     end
-    return @data['title'] != ''
+    data
   end
 
   def openbd
+    data = emptydata
     begin
       client = OpenBD::Client.new
       res = client.search(isbns: [@isbn])
-    
-      @data['authors'] = []
       res.body[0]['summary']['author'].split(/\s+/).each { |s|
         author = ''
         if s =~ /^(.*)／著/
@@ -64,24 +81,27 @@ class Bookinfo
         end
         author.gsub!(/,/, ', ')
         author.gsub!(/([a-z])([A-Z])/,"\\1 \\2")
-        @data['authors'] << author if author != ''
+        data['authors'] << author if author != ''
       }
-      @data['title'] = res.body[0]['summary']['title']
-      @data['publisher'] = res.body[0]['summary']['publisher']
+      data['title'] = res.body[0]['summary']['title']
+      data['publisher'] = res.body[0]['summary']['publisher']
     rescue
     end
+    data
   end
   
   def google
+    data = emptydata
     begin
       uri = URI.parse("https://www.googleapis.com/books/v1/volumes?q=isbn:#{@isbn}")
       data = JSON.parse uri.read
       volumeinfo = data['items'][0]['volumeInfo']
-      @data['publisher'] = ''
-      @data['title'] = volumeinfo['title']
-      @data['authors'] = volumeinfo['authors']
+      data['publisher'] = ''
+      data['title'] = volumeinfo['title']
+      data['authors'] = volumeinfo['authors']
     rescue
     end
+    data
   end
   
   def image
@@ -121,22 +141,22 @@ class Bookinfo
   end
   
   def authors
-    @data['authors']
+    @data['authors'].join(', ')
   end
-  
 end
 
 if __FILE__ == $0 then
-  isbn = '0262011530'
-  isbn = '4063192393'
   isbn = '4065020352'
+  isbn = '4797399287'
+  isbn = '4320026926'
+  isbn = '4063192393'
+  isbn = '0262011530'
+  isbn = '4065145139'
+  isbn = '4297104636'
+  isbn = '430902744X'
   bookinfo = Bookinfo.new(isbn)
   puts bookinfo.title
   puts bookinfo.publisher
   puts bookinfo.authors.join(', ')
-  
-  #puts bookinfo.publisher(isbn)
-  #puts bookinfo.authors(isbn)
-  #puts bookinfo.url(isbn)
   puts bookinfo.image
 end
