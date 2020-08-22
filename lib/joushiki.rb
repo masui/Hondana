@@ -37,8 +37,8 @@ def get_joushiki()
 end
 
 def check_joushiki(q,a)
-  # url = "http://joushiki.herokuapp.com/"
-  url = "http://joushiki.com/"
+  url = "http://joushiki.herokuapp.com/"
+  # url = "http://joushiki.com/"
   puts "check_joushiki('#{q}','#{a}')"
   return false if q.to_s == '' || a.to_s == ''
   text = q.sub(/■/,a)
