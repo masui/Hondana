@@ -104,7 +104,7 @@ GEM
     pg (0.21.0)
     public_suffix (3.0.2)
     puma (3.11.2)
-    rack (2.0.4)
+    rack (2.2.3)
     rack-attack (5.0.1)
       rack
     rack-test (0.8.2)
