@@ -23,7 +23,7 @@ require 'net/https'
 
 def get_joushiki()
   # url = "http://joushiki.com/"
-  url = "https://joushiki.herokuapp.com/"
+  url = "http://joushiki.herokuapp.com/"
   begin
     uri = URI.parse(URI.escape(url)) # 何故かescape必要?
     http = Net::HTTP.new(uri.host, uri.port)
