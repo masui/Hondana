@@ -24,6 +24,7 @@ require 'net/https'
 def get_joushiki()
   url = "http://joushiki.herokuapp.com/"
   # url = "http://joushiki.com/"
+  url = "http://joushiki.herokuapp.com/"
   begin
     uri = URI.parse(URI.escape(url)) # 何故かescape必要?
     http = Net::HTTP.new(uri.host, uri.port)
@@ -38,7 +39,7 @@ def get_joushiki()
 end
 
 def check_joushiki(q,a)
-  url = "http://joushiki.herokuapp.com/"
+  url = "https://joushiki.herokuapp.com/"
   # url = "http://joushiki.com/"
   puts "check_joushiki('#{q}','#{a}')"
   return false if q.to_s == '' || a.to_s == ''
