@@ -44,6 +44,9 @@ def check_joushiki(q,a)
   puts "check_joushiki('#{q}','#{a}')"
   return false if q.to_s == '' || a.to_s == ''
   text = q.sub(/■/,a)
+
+  return true # test
+  
   begin
     uri = URI.parse(URI.escape(url)) # 何故かescape必要?
     http = Net::HTTP.new(uri.host, uri.port)
