@@ -80,10 +80,11 @@ class BookshelfController < ApplicationController
 
     puts "challenge=#{challenge}, response=#{response}"
 
-    unless check_joushiki(challenge,response)
-      redirect_to :action => 'list'
-      return
-    end
+    # unless check_joushiki(challenge,response)
+    #   redirect_to :action => 'list'
+    #   return
+    # end
+
     #    #
     #    # 常識サーバからは、問題を暗号化したものも返る
     #    # これを公開鍵で復号できればOK
