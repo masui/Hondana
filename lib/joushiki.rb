@@ -22,12 +22,13 @@ require 'net/https'
 # end
 
 def get_joushiki()
-  url = "https://joushiki.herokuapp.com/"
+  url = "http://joushiki.herokuapp.com/"
   # url = "http://joushiki.com/"
   begin
     uri = URI.parse(URI.escape(url)) # 何故かescape必要?
     http = Net::HTTP.new(uri.host, uri.port)
-    req = Net::HTTP::Get.new(uri.path)
+    # req = Net::HTTP::Get.new(uri.path)
+    req = Net::HTTP::Get.new(url)
     res = http.request(req)
     return "" unless res
     JSON.parse(res.body)
@@ -45,9 +46,9 @@ def check_joushiki(q,a)
   begin
     uri = URI.parse(URI.escape(url)) # 何故かescape必要?
     http = Net::HTTP.new(uri.host, uri.port)
-    #req = Net::HTTP::Get.new("#{uri.path}?q=#{q}&a=#{a}")
-    req = Net::HTTP::Get.new("#{uri.path}#{text}")
-    puts "uri=#{uri.path}#{text}"
+    # req = Net::HTTP::Get.new("#{uri.path}?q=#{q}&a=#{a}")
+    # req = Net::HTTP::Get.new("#{uri.path}#{text}")
+    req = Net::HTTP::Get.new("#{url}#{text}")
     res = http.request(req)
     puts "BODY = #{res.body}"
     return false unless res
